@@ -1,13 +1,12 @@
 import { defineConfig } from "vite";
+import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
 
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react(), tailwindcss()],
   server: {
-    host: true, // allow network access
+    host: "0.0.0.0",
     port: 5173,
-    strictPort: true,
-    // Allow the loca.lt host
-    allowedHosts: ["thick-brooms-create.loca.lt"],
+    allowedHosts: ["lemon-moons-say.loca.lt"],
   },
 });
