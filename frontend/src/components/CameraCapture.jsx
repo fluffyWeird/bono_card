@@ -6,7 +6,7 @@ export default function CameraCapture({ onQrDecoded }) {
       <Scanner
         onScan={(result) => {
           if (result) {
-            console.log("QR decoded:", result);
+            document.writeln("QR decoded:", result);
           }
         }}
       />
