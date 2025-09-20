@@ -1,14 +1,21 @@
-// controllers/userController.js
-import User from "../models/User.js"; // your MongoDB model
+import User from "../models/User.js";
 
-// Handle ID input (from /input-id form or QR scan)
+// Handle ID input from /home
 export const checkUser = async (req, res) => {
   try {
-    const { schoolId } = req.body; // or req.query
-    const user = await User.findOne({ schoolId });
+    const { faydaFAN, schoolId, phoneNumber } = req.body;
 
+    // Single query to check all three identifiers depending on which is inputted by the security guard we can find it
+
+    const user = await User.findOne({
+      $or: [
+        { schoolId: schoolId || null },
+        { phoneNumber: phoneNumber || null },
+        { faydaFAN: faydaFAN || null },
+      ],
+    });
+    //if User exists fine if not we will register them by redirecting the url with the ID
     if (user) {
-      // Return user data as JSON
       return res.json({
         success: true,
         message: "User found",
@@ -21,37 +28,31 @@ export const checkUser = async (req, res) => {
         },
       });
     } else {
-      // Return JSON indicating user not found
-      console.log({
-        success: false,
-        message: "User not found",
-        schoolId,
-      });
-      return res.redirect(`/register/${schoolId}`);
+      // Redirect to register based on whichever identifier exists
+      if (schoolId) return res.redirect(`/register/${schoolId}`);
+      if (phoneNumber) return res.redirect(`/register/${phoneNumber}`);
+      if (faydaFAN) return res.redirect(`/register/${faydaFAN}`);
+      return res.redirect(`/register`);
     }
   } catch (err) {
     console.error(err);
     return res.status(500).json({ success: false, message: "Server error" });
   }
 };
-// Show registration form (optional if you serve HTML)
-export const showRegistrationForm = (req, res) => {
-  const { schoolId } = req.query;
-  // Render your HTML form or send JSON
-  res.render("register", { schoolId });
-};
-
 // Handle registration form submission
 export const registerUser = async (req, res) => {
   try {
-    const { schoolId, phoneNumber } = req.body;
+    const { schoolId, phoneNumber, faydaFAN } = req.body;
     const idPhoto = req.file ? req.file.filename : null; // if using multer for photo upload
 
     // Create new user in MongoDB
     const newUser = new User({
       schoolId,
       phoneNumber,
-      idPhoto,
+      faydaFAN,
+      photo: idPhoto, // keep naming consistent
+      isRegistered: false, // default until Telegram login or admin marks it
+      role: "student", // default role
     });
 
     await newUser.save();
@@ -63,6 +64,7 @@ export const registerUser = async (req, res) => {
     res.status(500).send("Error registering user");
   }
 };
+
 export const getUserById = async (req, res) => {
   try {
     const { id } = req.params;

@@ -26,6 +26,15 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    role: {
+      type: String,
+      enum: ["super_admin", "admin", "student", "security_guard"],
+      required: true,
+    },
+    isApproved: {
+      type: Boolean,
+      default: false, // only matters for security_guard role
+    },
   },
   { timestamps: true }
 );
