@@ -6,9 +6,24 @@ export default function CameraCapture({ onQrDecoded }) {
       <Scanner
         onScan={(result) => {
           if (result) {
-            document.writeln("QR decoded:", result);
+            console.log("QR decoded:", result);
+
+            // Send only the QR text to the backend
+            fetch("/api/process-qr-text", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ qrText: result }),
+            })
+              .then((res) => res.json())
+              .then((data) => {
+                console.log("Backend response:", data);
+                if (onQrDecoded) onQrDecoded(data);
+              })
+              .catch((err) => console.error(err));
           }
         }}
+        onError={(err) => console.error(err?.message)}
+        style={{ width: "100%", height: "100%", borderRadius: "0.5rem" }}
       />
 
       <span className="absolute bottom-2 bg-primary text-white px-3 py-1 rounded">

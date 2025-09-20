@@ -1,6 +1,7 @@
 import { connectDB } from "./src/config/db.js";
 import "dotenv/config";
 import express from "express";
+import User from "./src/models/User.js";
 import router from "./src/routers/userRoutes.js";
 import telegramRouter from "./src/routers/telegramRoutes.js";
 
