@@ -12,6 +12,7 @@ export function verifyTelegramData(data, botToken) {
     .createHmac("sha256", secretKey)
     .update(checkString)
     .digest("hex");
-
+  console.log(hmac);
+  console.log(data.hash);
   return hmac === data.hash;
 }

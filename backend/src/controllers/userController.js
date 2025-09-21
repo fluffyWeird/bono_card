@@ -67,13 +67,12 @@ export const registerUser = async (req, res) => {
 
 export const getUserById = async (req, res) => {
   try {
-    const { id } = req.params;
-    const user = await User.findById(id);
+    const { telegramId } = req.params;
+    const user = await User.findById(telegramId);
+    const users = await User.find();
 
     if (!user) {
-      return res
-        .status(404)
-        .json({ success: false, message: "User not found" });
+      return res.status(404).json({ success: false, message: users });
     }
 
     return res.json({
@@ -88,9 +87,10 @@ export const getUserById = async (req, res) => {
     });
   } catch (err) {
     console.error(err);
-    return res.status(500).json({ success: false, message: "Server error" });
+    return res.status(500).json({ success: false, message: err });
   }
 };
+export const updatePhoneNumber = async (req, res) => {};
 export const getAllUser = async (req, res) => {
   let users = await User.find();
   res.status(200).send(users);
